@@ -1,5 +1,10 @@
 #include "pebble.h"
 
+/*
+  Watchface that tells the time in a Binary format
+  by: Anthony Avina, 2014-2015
+*/
+  
 static Window *window;
 
 static Layer *layer;
@@ -7,6 +12,18 @@ static Layer *layer;
 //static int PEB_RES_X = 144;
 static int PEB_RES_Y = 168;
 
+// Light/Dark theme choices for watchface
+enum Theme {
+  light,
+  dark
+};
+
+// Configurable settings
+static enum Theme THEME = dark;  // Theme of watchface
+
+// Dependent on configured settings
+static int ON_COLOR;  // Color of Bits when on
+static int OFF_COLOR; // Color of bits when off
 static int OUTER_BOX_SIZE = 14; // Size of Bit box (outside)
 static int INNER_BOX_SIZE; // Size of Bit box (inside)
 static int BOX_OFFSET;
@@ -29,7 +46,7 @@ static const int g_bitmasks[] = {0x01, 0x02, 0x04, 0x08};
 
 // Will draw an 'on' bit, or a square that's filled in
 static void draw_bit_on(int x, int y, GContext *ctx) {
-  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_context_set_fill_color(ctx, ON_COLOR);
   graphics_fill_rect(ctx, GRect(x, y, OUTER_BOX_SIZE, OUTER_BOX_SIZE), 0, GCornerNone);
 }
 
@@ -38,7 +55,7 @@ static void draw_bit_off(int x, int y, GContext *ctx) {
   // Draw the entire box
   draw_bit_on(x, y, ctx);
   // Draw the hole in the box
-  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_fill_color(ctx, OFF_COLOR);
   graphics_fill_rect(ctx, GRect(x+BOX_OFFSET, y+BOX_OFFSET, INNER_BOX_SIZE, INNER_BOX_SIZE), 0, GCornerNone);
 }
 
@@ -128,6 +145,14 @@ void init() {
   INNER_BOX_SIZE = OUTER_BOX_SIZE - 4;
   BOX_OFFSET = (OUTER_BOX_SIZE - INNER_BOX_SIZE) / 2;
   
+  if(THEME == dark) {
+    ON_COLOR = GColorWhite;
+    OFF_COLOR = GColorBlack;
+  }else {
+    ON_COLOR = GColorBlack;
+    OFF_COLOR = GColorWhite;
+  }
+  
   // Setup Binary arrays
   setup_binary_arrays();
 
@@ -138,7 +163,10 @@ void init() {
 int main(void) {
   window = window_create();
   window_stack_push(window, true /* Animated */);
-  window_set_background_color(window, GColorBlack);
+  if(THEME == light)
+    window_set_background_color(window, GColorWhite);
+  else
+    window_set_background_color(window, GColorBlack);
 
   // Init the layer for display the image
   Layer *window_layer = window_get_root_layer(window);
