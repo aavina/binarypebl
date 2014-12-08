@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "aavina2@gmail.com",
+    "longName": "BinaryPebl",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "BinaryPebl",
+    "uuid": "1f23b71a-3c19-4453-a619-4fd67ac972fa",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
