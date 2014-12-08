@@ -2,12 +2,35 @@
 
 /*
   Watchface that tells the time in a Binary format
-  by: Anthony Avina, 2014-2015
 */
   
-static Window *window;
+/*
+  The MIT License (MIT)
+  
+  Copyright (c) Anthony Avina 2014
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+  
+static Window *g_window;
 
-static Layer *layer;
+static Layer *g_layer;
 
 //static int PEB_RES_X = 144;
 static int PEB_RES_Y = 168;
@@ -137,7 +160,7 @@ static void setup_binary_arrays() {
 // Handles the minute ticks
 static void tick_handler(struct tm *tick_time, TimeUnits units_changes) {
   update_bits();
-  layer_mark_dirty(layer);
+  layer_mark_dirty(g_layer);
 }
 
 void init() {
@@ -161,19 +184,19 @@ void init() {
 }
 
 int main(void) {
-  window = window_create();
-  window_stack_push(window, true /* Animated */);
+  g_window = window_create();
+  window_stack_push(g_window, true /* Animated */);
   if(THEME == light)
-    window_set_background_color(window, GColorWhite);
+    window_set_background_color(g_window, GColorWhite);
   else
-    window_set_background_color(window, GColorBlack);
+    window_set_background_color(g_window, GColorBlack);
 
   // Init the layer for display the image
-  Layer *window_layer = window_get_root_layer(window);
+  Layer *window_layer = window_get_root_layer(g_window);
   GRect bounds = layer_get_frame(window_layer);
-  layer = layer_create(bounds);
-  layer_set_update_proc(layer, layer_update_callback);
-  layer_add_child(window_layer, layer);
+  g_layer = layer_create(bounds);
+  layer_set_update_proc(g_layer, layer_update_callback);
+  layer_add_child(window_layer, g_layer);
 
   init();
   
@@ -184,6 +207,6 @@ int main(void) {
   // Unsubscribe from tick-timer
   tick_timer_service_unsubscribe();
 
-  window_destroy(window);
-  layer_destroy(layer);
+  window_destroy(g_window);
+  layer_destroy(g_layer);
 }
