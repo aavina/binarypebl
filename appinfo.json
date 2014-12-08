@@ -7,7 +7,13 @@
     "longName": "BinaryPebl",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/binarypebl.png",
+                "name": "BIN_PEBL_SCREEN",
+                "type": "png"
+            }
+        ]
     },
     "shortName": "BinaryPebl",
     "uuid": "1f23b71a-3c19-4453-a619-4fd67ac972fa",
