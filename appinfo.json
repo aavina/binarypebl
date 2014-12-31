@@ -9,14 +9,14 @@
     "resources": {
         "media": [
             {
-                "file": "images/binarypebl_menu.png",
-                "menuIcon": true,
-                "name": "BINARY_PEBL_MENU_IMG",
+                "file": "images/binarypebl.png",
+                "name": "BIN_PEBL_SCREEN",
                 "type": "png"
             },
             {
-                "file": "images/binarypebl.png",
-                "name": "BIN_PEBL_SCREEN",
+                "file": "images/binarypebl_menu.png",
+                "menuIcon": true,
+                "name": "BINARY_PEBL_MENU_IMG",
                 "type": "png"
             }
         ]

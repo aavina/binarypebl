@@ -105,12 +105,18 @@ static void flip_bits_array(Bit *arr, int size, char digit) {
 // Updates the on/off status of bits
 static void update_bits() {
   // Get a tm structure and time digits
+  int hour;
   time_t temp = time(NULL);
   struct tm *tick_time = localtime(&temp);
+  hour = tick_time->tm_hour;
+  
+  if(clock_is_24h_style() == S_FALSE && hour > 12)
+    hour -= 12;
+
   int m0_digit = tick_time->tm_min % 10;
   int m1_digit = (tick_time->tm_min - m0_digit) / 10;
-  int h0_digit = tick_time->tm_hour % 10;
-  int h1_digit = (tick_time->tm_hour - h0_digit) / 10;
+  int h0_digit = hour % 10;
+  int h1_digit = (hour - h0_digit) / 10;
 
   flip_bits_array(g_h1, 2, h1_digit);
   flip_bits_array(g_h0, 4, h0_digit);
@@ -121,7 +127,13 @@ static void update_bits() {
 static void layer_update_callback(Layer *me, GContext *ctx) {
   int i;
   
-  // Hour_1 bits
+  // Check if user is in 24 or 12 hour format
+  if(clock_is_24h_style() == S_TRUE)
+    i = 2;
+  else
+    i = 1;
+  
+  // Hour_1 bits (varies based on 24 or 12 hour format)
   for(i=0; i < 2; ++i)
     draw_bit(g_h1[i], ctx);
   // Hour_0 bits
