@@ -125,16 +125,16 @@ static void update_bits() {
 }
 
 static void layer_update_callback(Layer *me, GContext *ctx) {
-  int i;
+  int i, h_limit;
   
   // Check if user is in 24 or 12 hour format
   if(clock_is_24h_style() == S_TRUE)
-    i = 2;
+    h_limit = 2;
   else
-    i = 1;
+    h_limit = 1;
   
   // Hour_1 bits (varies based on 24 or 12 hour format)
-  for(i=0; i < 2; ++i)
+  for(i=0; i < h_limit; ++i)
     draw_bit(g_h1[i], ctx);
   // Hour_0 bits
   for(i=0; i < 4; ++i)
