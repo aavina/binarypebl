@@ -9,8 +9,9 @@
     "resources": {
         "media": [
             {
-                "file": "images/binarypebl_12hr_screen.png",
-                "name": "BIN_PEB_12HR",
+                "file": "images/binarypebl_menu.png",
+                "menuIcon": true,
+                "name": "BINARY_PEBL_MENU_IMG",
                 "type": "png"
             },
             {
@@ -19,9 +20,8 @@
                 "type": "png"
             },
             {
-                "file": "images/binarypebl_menu.png",
-                "menuIcon": true,
-                "name": "BINARY_PEBL_MENU_IMG",
+                "file": "images/binarypebl_12hr_screen.png",
+                "name": "BIN_PEB_12HR",
                 "type": "png"
             }
         ]
