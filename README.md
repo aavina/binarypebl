@@ -2,7 +2,7 @@ binarypebl
 ==========
 Binary watchface for Pebble.
 
-binarypebl will use the user's preference on 24/12 hour format based on their Pebble watches setting, which can be found under:
+binarypebl will use the user's preference on 24/12 hour format based on their Pebble's setting, which can be found under:
 
 Settings->Date & Time->Time Display
 
