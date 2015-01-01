@@ -45,7 +45,7 @@ enum Theme {
 static enum Theme THEME = dark;  // Theme of watchface
 
 // tm struct to compare with
-static struct tm *g_tick_time;
+static struct tm g_tick_time;
 
 // Dependent on configured settings
 static int ON_COLOR;  // Color of Bits when on
@@ -106,18 +106,15 @@ static void flip_bits_array(Bit *arr, int size, char digit) {
 }
 
 // Updates the on/off status of bits
-static void update_bits(struct tm *tick_time) {
+static void update_bits(struct tm tick_time) {
   // Get a tm structure and time digits
-  int hour;
-  //time_t temp = time(NULL);
-  //struct tm *tick_time = localtime(&temp);
-  hour = tick_time->tm_hour;
+  int hour = tick_time.tm_hour;
   
   if(clock_is_24h_style() == S_FALSE && hour > 12)
     hour -= 12;
 
-  int m0_digit = tick_time->tm_min % 10;
-  int m1_digit = (tick_time->tm_min - m0_digit) / 10;
+  int m0_digit = tick_time.tm_min % 10;
+  int m1_digit = (tick_time.tm_min - m0_digit) / 10;
   int h0_digit = hour % 10;
   int h1_digit = (hour - h0_digit) / 10;
 
@@ -175,13 +172,13 @@ static void setup_binary_arrays() {
 // Handles the minute ticks
 static void tick_handler(struct tm *tick_time, TimeUnits units_changes) {
   // Check if minute changed. If so, update. Else, do nothing
-  if(g_tick_time->tm_min != tick_time->tm_min ||
-    g_tick_time->tm_hour != tick_time->tm_hour)
+  if(g_tick_time.tm_min != tick_time->tm_min || 
+     g_tick_time.tm_hour != tick_time->tm_hour)
   {
-    update_bits(tick_time);
+    update_bits(*tick_time);
     layer_mark_dirty(g_layer);
   }
-  g_tick_time = tick_time;
+  g_tick_time = *tick_time;
 }
 
 void init() {
@@ -199,7 +196,7 @@ void init() {
   }
   
   // Current time
-  g_tick_time = localtime(&temp);
+  g_tick_time = *(localtime(&temp));
   
   // Setup Binary arrays
   setup_binary_arrays();
@@ -223,8 +220,10 @@ int main(void) {
   layer_set_update_proc(g_layer, layer_update_callback);
   layer_add_child(window_layer, g_layer);
 
+  // Initialize everything
   init();
   
+  // Initialize the bits with the current time
   update_bits(g_tick_time);
   
   app_event_loop();
