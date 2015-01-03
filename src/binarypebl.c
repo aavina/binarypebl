@@ -44,6 +44,9 @@ enum Theme {
 // Configurable settings
 static enum Theme THEME = dark;  // Theme of watchface
 
+// tm struct to compare with
+static struct tm g_tick_time;
+
 // Dependent on configured settings
 static int ON_COLOR;  // Color of Bits when on
 static int OFF_COLOR; // Color of bits when off
@@ -103,14 +106,17 @@ static void flip_bits_array(Bit *arr, int size, char digit) {
 }
 
 // Updates the on/off status of bits
-static void update_bits() {
+static void update_bits(struct tm tick_time) {
   // Get a tm structure and time digits
-  time_t temp = time(NULL);
-  struct tm *tick_time = localtime(&temp);
-  int m0_digit = tick_time->tm_min % 10;
-  int m1_digit = (tick_time->tm_min - m0_digit) / 10;
-  int h0_digit = tick_time->tm_hour % 10;
-  int h1_digit = (tick_time->tm_hour - h0_digit) / 10;
+  int hour = tick_time.tm_hour;
+  
+  if(clock_is_24h_style() == S_FALSE && hour > 12)
+    hour -= 12;
+
+  int m0_digit = tick_time.tm_min % 10;
+  int m1_digit = (tick_time.tm_min - m0_digit) / 10;
+  int h0_digit = hour % 10;
+  int h1_digit = (hour - h0_digit) / 10;
 
   flip_bits_array(g_h1, 2, h1_digit);
   flip_bits_array(g_h0, 4, h0_digit);
@@ -119,10 +125,16 @@ static void update_bits() {
 }
 
 static void layer_update_callback(Layer *me, GContext *ctx) {
-  int i;
+  int i, h_limit;
   
-  // Hour_1 bits
-  for(i=0; i < 2; ++i)
+  // Check if user is in 24 or 12 hour format
+  if(clock_is_24h_style() == S_TRUE)
+    h_limit = 2;
+  else
+    h_limit = 1;
+  
+  // Hour_1 bits (varies based on 24 or 12 hour format)
+  for(i=0; i < h_limit; ++i)
     draw_bit(g_h1[i], ctx);
   // Hour_0 bits
   for(i=0; i < 4; ++i)
@@ -159,11 +171,18 @@ static void setup_binary_arrays() {
 
 // Handles the minute ticks
 static void tick_handler(struct tm *tick_time, TimeUnits units_changes) {
-  update_bits();
-  layer_mark_dirty(g_layer);
+  // Check if minute changed. If so, update. Else, do nothing
+  if(g_tick_time.tm_min != tick_time->tm_min || 
+     g_tick_time.tm_hour != tick_time->tm_hour)
+  {
+    update_bits(*tick_time);
+    layer_mark_dirty(g_layer);
+  }
+  g_tick_time = *tick_time;
 }
 
 void init() {
+  time_t temp = time(NULL);
   // Initialize some constants
   INNER_BOX_SIZE = OUTER_BOX_SIZE - 4;
   BOX_OFFSET = (OUTER_BOX_SIZE - INNER_BOX_SIZE) / 2;
@@ -176,11 +195,14 @@ void init() {
     OFF_COLOR = GColorWhite;
   }
   
+  // Current time
+  g_tick_time = *(localtime(&temp));
+  
   // Setup Binary arrays
   setup_binary_arrays();
 
   // Register with TickTimerService
-  tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+  tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
 }
 
 int main(void) {
@@ -198,9 +220,11 @@ int main(void) {
   layer_set_update_proc(g_layer, layer_update_callback);
   layer_add_child(window_layer, g_layer);
 
+  // Initialize everything
   init();
   
-  update_bits();
+  // Initialize the bits with the current time
+  update_bits(g_tick_time);
   
   app_event_loop();
 
