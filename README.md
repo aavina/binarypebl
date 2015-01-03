@@ -8,5 +8,5 @@ Settings->Date & Time->Time Display
 
 ![screenshot](https://raw.githubusercontent.com/aavina/binarypebl/master/resources/images/binarypebl.png) 24-hour format
 
-![screenshot2](https://raw.githubusercontent.com/aavina/binarypebl/UserPreferenceStyle/resources/images/binarypebl_12hr_screen.png) 12-hour format
+![screenshot2](https://raw.githubusercontent.com/aavina/binarypebl/master/resources/images/binarypebl_12hr_screen.png) 12-hour format
 
